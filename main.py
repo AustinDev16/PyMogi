@@ -1,4 +1,4 @@
-from src.Mogi import MogiSourceConfig, MogiPoint
+from Mogi import MogiSourceConfig, MogiPoint
 
 settings = MogiSourceConfig(0.5, 1e6, 500, 4e3, 0,0)
 
