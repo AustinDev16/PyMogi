@@ -8,3 +8,5 @@ print(mogiPoint.config.poissonRatio)
 print(mogiPoint.convertCartesianToRadial(4,0))
 
 print(mogiPoint._mogi_point_engine(5e6, 5))
+
+mogiPoint.config.depth
