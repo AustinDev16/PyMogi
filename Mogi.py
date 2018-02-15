@@ -1,6 +1,4 @@
 import numpy as np
-import math
-import matplotlib.pyplot as plt
         
 class MogiSourceConfig:
     def __init__(self, poissonRatio, 
@@ -22,10 +20,14 @@ class MogiPoint:
     def __init__(self, sourceConfiguration):
         self.config = sourceConfiguration
         
-    def convertCartesianToRadial(self, x, y):
+    def convertCartesianToRadial2D(self, x, y):
         adjX = np.abs(x - self.config.centerX)
         adjY = np.abs(y - self.config.centerY)
         return np.sqrt(np.power(adjX,2) + np.power(adjY,2))
+    
+    def convertCartesianToRadial1D(self, x):
+        adjX = np.abs(x - self.config.centerX)
+        return adjX
     
     def _mogi_point_engine(self, dP, distance):
         return ( ((1-self.config.poissonRatio) * dP * np.power(self.config.radius, 3.0) )/
@@ -33,27 +35,38 @@ class MogiPoint:
                              np.power(self.config.depth, 2.0)), 1.5)))
 
     def calculate1D(self, dP, grid):
-        return self._mogi_point_engine(dP, grid)
+        adjGrid = self.convertCartesianToRadial1D(grid)
+        return self._mogi_point_engine(dP, adjGrid)
 
     def calculate2D(self, dP, xgrid, ygrid):
         yv, xv = np.meshgrid(ygrid, xgrid, sparse=False, indexing='ij')
-        converted = self.convertCartesianToRadial(xv, yv)
+        converted = self.convertCartesianToRadial2D(xv, yv)
         return self._mogi_point_engine(dP, converted)
 
-class CalculateDeformation:
-    def __init__(self, mogiPointArray):
+
+class MultipleSourceSolver:
+    def __init__(self, mogiPointArray = np.array([])):
         self.mogiPointArray = mogiPointArray
+        
+    def addSource(self, pointSource: MogiPoint):
+        np.append(self.mogiPointArray, pointSource)
 
-    def calculate1D(self, dP: float, array: [])-> []:
-        solution = np.zeros(len(array))
+    def calculate1D(self, dP, grid):
+        solution = np.zeros(len(grid))
+        print(len(self.mogiPointArray))
+        for source in self.mogiPointArray:
+            solution += source.calculate1D(dP, grid)
+        return solution
 
-        mogi = self.mogiPointArray[0]
-        sol = mogi._mogi_point_engine(dP,array) + 1
-        return sol
+    def calculate2D(self, dP, xgrid, ygrid):
+        yv, xv = np.meshgrid(ygrid, xgrid, sparse=False, indexing='ij')
+        converted = self._zeroOutMeshGrid(xv, yv)
+        for source in self.mogiPointArray:
+            converted += source.calculate2D(dP, xgrid, ygrid)
+        return converted
 
-    def calculate2D(self):
-        pass
-
+    def _zeroOutMeshGrid(self, xmesh, ymesh):
+        return xmesh * 0 + ymesh * 0
 
        
 
