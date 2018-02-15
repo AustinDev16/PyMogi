@@ -1,14 +1,15 @@
-from Mogi import MogiSourceConfig, MogiPoint, MultipleSourceSolver
+import Mogi as mp
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 # Create Mogi Point Configuration
-sourceAConfig = MogiSourceConfig(0.25, 1e6, 500, 4e3, 0, 0)
-sourceBConfig = MogiSourceConfig(0.25, 1e6, 500, 5e3,8e3, 3e3)
+sourceAConfig = mp.MogiSourceConfig(0.25, 1e6, 500, 4e3, 0, 0)
+sourceBConfig = mp.MogiSourceConfig(0.25, 1e6, 500, 5e3,8e3, 3e3)
 #Create Point with that Configuration
-sourceA = MogiPoint(sourceAConfig)
-sourceB = MogiPoint(sourceBConfig)
+sourceA = mp.MogiPoint(sourceAConfig)
+sourceB = mp.MogiPoint(sourceBConfig)
+
 
 # Calculate a single point deformation
 sourceA._mogi_point_engine(5e6, 500)
@@ -24,7 +25,7 @@ ygrid = np.linspace(-5e3,5e3,100)
 sol = sourceA.calculate2D(5e6, xgrid, ygrid)
 
 
-multi =  MultipleSourceSolver(np.array([sourceA, sourceB]))
+multi =  mp.MultipleSourceSolver(np.array([sourceA, sourceB]))
 sol3 = multi.calculate2D(5e6, xgrid, ygrid)
 fig4, ax4 = plt.subplots()
 ccf = ax4.contourf(xgrid, ygrid,sol3, cmap=plt.cm.Blues)
