@@ -22,13 +22,21 @@ class MogiPoint:
     def __init__(self, sourceConfiguration):
         self.config = sourceConfiguration
         
-    def convertCartesianToRadial(self, x, y) -> float:
-        return math.sqrt( math.pow(x,2) + math.pow(y,2))
+    def convertCartesianToRadial(self, x, y):
+        return np.sqrt(np.power(x,2) + np.power(y,2))
     
-    def _mogi_point_engine(self, dP, distance) -> float:
-        return ( ((1-self.config.poissonRatio) * dP * math.pow(self.config.radius, 3.0) )/
-                (self.config.mu) ) * ((self.config.depth)/(math.pow((math.pow(distance, 2.0) + 
-                             math.pow(self.config.depth, 2.0)), 1.5)))
+    def _mogi_point_engine(self, dP, distance):
+        return ( ((1-self.config.poissonRatio) * dP * np.power(self.config.radius, 3.0) )/
+                (self.config.mu) ) * ((self.config.depth)/(np.power((np.power(distance, 2.0) + 
+                             np.power(self.config.depth, 2.0)), 1.5)))
+
+    def calculate1D(self, dP, grid):
+        return self._mogi_point_engine(dP, grid)
+
+    def calculate2D(self, dP, xgrid, ygrid):
+        xv, yv = np.meshgrid(xgrid, ygrid, sparse=False, indexing='ij')
+        converted = self.convertCartesianToRadial(xv, yv)
+        return self._mogi_point_engine(dP, converted)
 
 class CalculateDeformation:
     def __init__(self, mogiPointArray):
@@ -37,9 +45,9 @@ class CalculateDeformation:
     def calculate1D(self, dP: float, array: [])-> []:
         solution = np.zeros(len(array))
 
-        # for i in range(0, len(array), 1)
-        #     solution[i] = self.mogiPointArray[j]._mogi_point_engine(dP, array[i])
-        return solution
+        mogi = self.mogiPointArray[0]
+        sol = mogi._mogi_point_engine(dP,array) + 1
+        return sol
 
     def calculate2D(self):
         pass
