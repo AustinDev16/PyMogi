@@ -23,7 +23,9 @@ class MogiPoint:
         self.config = sourceConfiguration
         
     def convertCartesianToRadial(self, x, y):
-        return np.sqrt(np.power(x,2) + np.power(y,2))
+        adjX = np.abs(x - self.config.centerX)
+        adjY = np.abs(y - self.config.centerY)
+        return np.sqrt(np.power(adjX,2) + np.power(adjY,2))
     
     def _mogi_point_engine(self, dP, distance):
         return ( ((1-self.config.poissonRatio) * dP * np.power(self.config.radius, 3.0) )/
@@ -34,7 +36,7 @@ class MogiPoint:
         return self._mogi_point_engine(dP, grid)
 
     def calculate2D(self, dP, xgrid, ygrid):
-        xv, yv = np.meshgrid(xgrid, ygrid, sparse=False, indexing='ij')
+        yv, xv = np.meshgrid(ygrid, xgrid, sparse=False, indexing='ij')
         converted = self.convertCartesianToRadial(xv, yv)
         return self._mogi_point_engine(dP, converted)
 

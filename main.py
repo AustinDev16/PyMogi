@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # Create Mogi Point Configuration
-sourceAConfig = MogiSourceConfig(0.25, 1e6, 500, 4e3, 0,0)
+sourceAConfig = MogiSourceConfig(0.25, 1e6, 500, 4e3, 2e3,-10.5e3)
 #Create Point with that Configuration
 sourceA = MogiPoint(sourceAConfig)
 
@@ -24,6 +24,7 @@ print(sol)
 
 fig2, ax = plt.subplots()
 ax.contourf(xgrid, ygrid, sol)
+ax.set(xlabel="Horizontal Distance, (m)", ylabel='Vertical Distance, (m)')
 fig2.savefig("xy.pdf")
 soltuion = sourceA.calculate1D(5e6, xgrid)
 
